@@ -1,11 +1,13 @@
 package com.codepath.android.lollipopexercise.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.codepath.android.lollipopexercise.R;
 import com.codepath.android.lollipopexercise.adapters.ContactsAdapter;
@@ -14,7 +16,7 @@ import com.codepath.android.lollipopexercise.models.Contact;
 import java.util.List;
 
 
-public class ContactsActivity extends AppCompatActivity {
+public class ContactsActivity extends AppCompatActivity  implements  ContactsAdapter.onContactClickListener{
     private RecyclerView rvContacts;
     private ContactsAdapter mAdapter;
     private List<Contact> contacts;
@@ -56,11 +58,29 @@ public class ContactsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        if (id == R.id.add_contact) {
+            contacts.add(0, Contact.getRandomContact(this));
+            mAdapter.notifyItemInserted(0);
+            rvContacts.scrollToPosition(0);
+            Snackbar.make(rvContacts, R.string.snack_bar_Add, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snackbar_action, new View.OnClickListener() {
 
+                        @Override
+                        public void onClick(View view) {
+                            contacts.remove(0);
+                            mAdapter.notifyItemRemoved(0);
+                        }
+                    })
+                    .setActionTextColor(getResources().getColor(R.color.accent))
+                    .setDuration(3000).show();
+        }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onContactSelect(Contact contact) {
+    }
+
+
 }
